@@ -110,6 +110,8 @@ function trainweight!(weights, alpha, iters, train_data)
                 test_error += sum((test_y[j] - l2)^2)
                 test_correct_cnt += Int(argmax(l2) == argmax(test_y[j]))
                 println("iters= $i, test_errors= $test_error, test_accuracy= $(test_correct_cnt/length(test_y)), train_error= $(error/length(train_x)), train_accuracy = $(correct_cnt/length(train_x))")
+            end
+        end
     end
 end
 
