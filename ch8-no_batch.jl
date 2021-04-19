@@ -113,3 +113,5 @@ function trainweight!(weights, alpha, iters, train_data)
     end
 end
 
+relu(x) = (x >= 0) * x
+relu2deriv(output) = (output >= 0)            
