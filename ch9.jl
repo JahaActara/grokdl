@@ -5,7 +5,7 @@ using MLDatasets, Random
 Random.seed!(1)
 
 # Hyperparameters
-hparam = alpha, iters, h_size, data_size, n_labels, batch_size = 0.005, 350, 100, 1000, 10, 100
+hparam = alpha, iters, h_size, data_size, n_labels, batch_size = 2, 300, 100, 1000, 10, 100
 
 function main(hparam)
     # Parse hparam
@@ -92,7 +92,7 @@ function trainweight!(weights, alpha, iters, train_data, batch_size)
         for j = 1:Int(length(train_x))/batch_size
             batch_start, batch_end = (i-1)*batch_size + 1, i * batch_size
             l0 = train_x[batch_start, batch_end]
-            l1 = relu.(weights[1] * l0)
+            l1 = tanh.(weights[1] * l0)
             l2 = weights[2] * l1
             error += sum(labels[batch_start:batch_end] - l2)
             for k = 1:batch_size
@@ -102,6 +102,7 @@ function trainweight!(weights, alpha, iters, train_data, batch_size)
                 l1_delta = l2_delta * weights[2]' .* relu2deriv(l1)
                 weights[2] = alpha .* l1' * l2_delta
                 weights[1] = alpha .* l0' * l1_delta
+            end
         end
 
         if(i % 10 == 0 or i == iters-1)
@@ -113,5 +114,14 @@ function trainweight!(weights, alpha, iters, train_data, batch_size)
                 test_error += sum((test_y[j] - l2)^2)
                 test_correct_cnt += Int(argmax(l2) == argmax(test_y[j]))
                 println("iters= $i, test_errors= $test_error, test_accuracy= $(test_correct_cnt/length(test_y)), train_error= $(error/length(train_x)), train_accuracy = $(correct_cnt/length(train_x))")
+            end
+        end         
     end
 end
+
+tanh2deriv(output) = 1 - output^2            
+softmax(x) = exp(x) ./ sum(exp(x))
+ 
+                
+                
+                
