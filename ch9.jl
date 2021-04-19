@@ -93,13 +93,15 @@ function trainweight!(weights, alpha, iters, train_data, batch_size)
             batch_start, batch_end = (i-1)*batch_size + 1, i * batch_size
             l0 = train_x[batch_start, batch_end]
             l1 = tanh.(weights[1] * l0)
-            l2 = weights[2] * l1
+            dropout_mask = rand((0,1), size(l1))
+            l1 .*= dropout_mask .* 2
+            l2 = softmax(weights[2] * l1)
             error += sum(labels[batch_start:batch_end] - l2)
             for k = 1:batch_size
                 correct_cnt += Int(argmax(labels[batch_start+k])==argmax(l2[k]))
 
-                l2_delta = (labels[batch_start:batch_end] - l2)/batch_size
-                l1_delta = l2_delta * weights[2]' .* relu2deriv(l1)
+                l2_delta = (labels[batch_start:batch_end] - l2)/(batch_size * size(l2)[1])
+                l1_delta = l2_delta * weights[2]' .* tanh2deriv(l1)
                 weights[2] = alpha .* l1' * l2_delta
                 weights[1] = alpha .* l0' * l1_delta
             end
@@ -109,7 +111,7 @@ function trainweight!(weights, alpha, iters, train_data, batch_size)
             test_error, test_correct_cnt = (0.0, 0)
             for j = 1:length(test_y)
                 l0 = test_images[j]
-                l1 = relu.(weights[1] * l0))
+                l1 = tanh.(weights[1] * l0))
                 l2 = weights[2] * l1
                 test_error += sum((test_y[j] - l2)^2)
                 test_correct_cnt += Int(argmax(l2) == argmax(test_y[j]))
