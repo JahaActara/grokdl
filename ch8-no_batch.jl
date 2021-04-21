@@ -12,12 +12,12 @@ using Random
 Random.seed!(1)
 
 #=
-This block comment indicates that the codes from here on are what should be included in a module.
-This is true until the next block comment.
+  This block comment indicates that the codes from here on are what should be included in a module.
+  This is true until the next block comment.
 
-I borrowed from tobiasbrodd's neural.jl from his(or her) neural-network-julia repository. Specifically, the notion of struct Network and the following.
-Thanks Tobias, but your code hasn't shed Python's husk. To be fair, his last commit was in 2018.
-I tried to make my code more verbose where needed, and more idiomatic. I also made the code so that z = Wx + b. 
+  I borrowed from tobiasbrodd's neural.jl from his(or her) neural-network-julia repository. Specifically, the notion of struct Network and the following.
+  Thanks Tobias, but your code hasn't shed Python's husk. To be fair, his last commit was in 2018.
+  I tried to make my code more verbose where needed, and more idiomatic. I also made the code so that z = Wx + b. 
 =#
 
 using Statistics
@@ -149,9 +149,9 @@ function predict!(net::Network, XP)
 end
 
 #=
-This block comment indicates the end of codes that should have been included in a module, but wasn't. I'm lazy. Sue me.
-I confess that I still don't know how to factor my codes.
-Fira code would look better. I don't know if ligatures will be beneficial to Julia. Time will tell.
+  This block comment indicates the end of codes that should have been included in a module, but wasn't. I'm lazy. Sue me.
+  I confess that I still don't know how to factor my codes.
+  Fira code would look better. I don't know if ligatures will be beneficial to Julia. Time will tell.
 =#
 
 # Hyperparameters
