@@ -4,20 +4,16 @@
   Last edited on: 2021-04-22
 =#
 
+#=
+  This is the the same thing, only with batches. It is heavily copy/pasted from ch8_no_batch.jl. However, I will make it as well documented as possible.
+=#
+
 # Modules
 using MLDatasets
 
 # Reproducibility
 using Random
 Random.seed!(1)
-
-#=
-  This block comment indicates that the codes from here on are what should be included in a module.
-  This is true until the next block comment.
-  I borrowed from tobiasbrodd's neural.jl from his(or her) neural-network-julia repository. Specifically, the notion of struct Network and the following.
-  Thanks Tobias, but your code hasn't shed Python's husk. To be fair, his last commit was in 2018.
-  I tried to make my code more verbose where needed, and more idiomatic. I also made the code so that z = Wx + b. 
-=#
 
 using Statistics
 
@@ -84,7 +80,7 @@ function init(input_size, h_sizes, output_size, alpha=0.01)
 end
 
 function forward!(net::Network, x) # x is a single instance of data
-    push!(net.layers, x)
+    net.layers = [x]
     for i = 1:length(net.weights)
         z = net.weights[i] * net.layers[i] .+ net.bias[i]
         push!(net.layers, relu(z))
@@ -114,25 +110,24 @@ function backward!(net::Network, x, y)
     return net
 end
 
-function train!(net::Network, train_data, iters)
+function train!(net::Network, train_data, iters, data_size, batch_size)
     X, Y = train_data
     
     for i = 1:iters
-        for j = 1:length(X)
-            forward!(net, X[j])
-            backward!(net, X[j], Y[j])
+        for j = 1:div(data_size,batch_size)
+            batch_start, batch_end = (j-1)*batch_size + 1, j * batch_size
+            forward!(net, X[batch_start:batch_end])
+            backward!(net, X[batch_start:batch_end], Y[batch_start:batch_end])
+        end
+        if j*batch_size < data_size
+            batch_start, batch_end = j * batch_size+1, data_size
+            forward!(net, X[batch_start:batch_end])
+            backward!(net, X[batch_start:batch_end], Y[batch_start:batch_end])
         end
     end
     
     return nothing
-end
-
-function train_batch!(net::Network, train_data, iters, batch_size)
-    X, Y = train_data
-    
-    # Set how many batch comes out from length of X and batch_size.
-    n_batch = div(length(X), batch_size)
-    
+end 
 
 function test(net::Network, test_data)
     X, Y = test_data
@@ -161,11 +156,11 @@ end
 =#
 
 # Hyperparameters
-hparam = alpha, iters, h_size, data_size, output_size = 0.01, 350, 100, 1000, 10
+hparam = alpha, iters, input_size, h_size, output_size, data_size, batch_size = 0.01, 350, 784, 100, 10, 1000, 100
 
 function main(hparam)
     # Parse hparam
-    alpha, iters, h_size, data_size, output_size = hparam
+    alpha, iters, input_size, h_size, output_size, data_size, batch_size = hparam
 
     # Get data
     # The load_data function cleans it up too
@@ -183,7 +178,7 @@ function main(hparam)
     net = init(input_size, h_size, output_size, alpha=alpha)
 
     # train! function changes weights value
-    train!(net, train_data, iters)
+    train!(net, train_data, iters, data_size, batch_size)
     
     println(test(net, test_data))
 
