@@ -94,7 +94,7 @@ function backward!(net::Network, x, y)
     error = y - output
     delta = error .* relu2deriv(output)
 
-    net.weights[end] += net.alpha * transpose(net.layers[end-1]) * delta
+    net.weights[end] += net.alpha * net.layers[end-1]' * delta
     net.bias[end] .+= net.alpha * mean(delta)
 
     w_length = length(net.weights)
