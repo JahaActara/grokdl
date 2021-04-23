@@ -1,9 +1,46 @@
+using MLDatasets
+
+abstract type Layer end
+
+# Input layer
+struct InputLayer <: Layer
+    input::Array{Float64, 3}
+    size::Tuple
+end
+
+# Convolutional layer
+struct ConvLayer <: Layer
+    kernels::Array{Float64,3}
+    # {number of kernels, their size, stride, padding length} In total of 4 arguments
+    kernel_hparam::Tuple
+    size::Tuple
+end
+
+# Fully connected layer
+struct FCLayer <: Layer
+    weights::Array{Float64,2}
+    size::Tuple
+end
+
+# Non-linear, that is, activation layer.
+struct NLLayer <: Layer
+    activation
+    size::Tuple
+end
+    
+
+mutable struct Network
+    layers::Array{Layer,1}
+end
+
 function main()
     # Get data
+    train_data, test_data = get_data()
     
-    # Preprocess data
+    # data_shape = (size(train_data[1][1]), size(train_data[2][1]))
+    # Hyperparameters
+    hparameters = iters, batch_size
     
-    # Hyperparameters, and input rows, kernel rows, etc
     
     # Initialize kernels with dimensions ((kernel_rows*kernel_cols, num_kernels)).-0.01
     
@@ -44,5 +81,46 @@ function main()
         l1_delta = l2_delta * w12' .*tanh2deriv(l1)
         l1_delta .*= dropout_mask
         w12 += alpha .* l1' * l2_delta
-        
+    end
+end
+
+# get_data() and relevant functions
+function get_data()
+    train_data = MNIST.traindata()
+    test_data = MNIST.testdata()
+    
+    # Preprocess data
+    train_data = preprocess_data(train_data, size=1000)
+    test_data = preprocess_data(test_data, size="all")
+    
+    train_data, test_data
+end
+
+function preprocess_data(data, clean="null", size="all")
+    x, y = data
+    
+    if size="all"
+        x = x[1:end]
+        y = y[1:end]
+    else 
+        x = x[1:size]
+        y = y[1:size]
+    end
+    
+    # One hot vectorize
+    n_labels = maximum(y)
+    temp = zeros(n_labels, length(y))
+    for (index, label) in enumerate(y)
+        temp[label,index] = 1.0
+    end
+    y = temp
+    
+    if clean == "null"
+        return (x, y)
+    else if clean == "flatten"
+        ppi = x[1] * x[2]
+        return (reshape(ppi,length(x)), y)
+    end
+end
+# End of get_data() and relevant functions
             
