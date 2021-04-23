@@ -37,10 +37,10 @@ function main()
     # Get data
     train_data, test_data = get_data()
     
-    # data_shape = (size(train_data[1][1]), size(train_data[2][1]))
     # Hyperparameters
     hparameters = iters, batch_size
     
+    net = Network()
     
     # Initialize kernels with dimensions ((kernel_rows*kernel_cols, num_kernels)).-0.01
     
@@ -82,6 +82,7 @@ function main()
         l1_delta .*= dropout_mask
         w12 += alpha .* l1' * l2_delta
     end
+    return nothing
 end
 
 # get_data() and relevant functions
@@ -93,7 +94,7 @@ function get_data()
     train_data = preprocess_data(train_data, size=1000)
     test_data = preprocess_data(test_data, size="all")
     
-    train_data, test_data
+    return (train_data, test_data)
 end
 
 function preprocess_data(data, clean="null", size="all")
@@ -121,6 +122,7 @@ function preprocess_data(data, clean="null", size="all")
         ppi = x[1] * x[2]
         return (reshape(ppi,length(x)), y)
     end
+    return nothing
 end
 # End of get_data() and relevant functions
             
