@@ -100,7 +100,7 @@ end
 function preprocess_data(data, clean="null", size="all")
     x, y = data
     
-    if size="all"
+    if size == "all"
         x = x[1:end]
         y = y[1:end]
     else 
