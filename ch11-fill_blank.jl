@@ -89,7 +89,7 @@ for (rev_i, review) in enumerate(repeat(input_dataset, iters))
     end
     if (rev_i-1)%150 == 0
         progress = string(rev_i/(length(input_dataset)*iters))
-        println("Iter: $(rev_i) Progress: $(progress[3:4]). $(progress[5:6])% $(similar("terrible")))
+        println("Iter: $(rev_i) Progress: $(progress[3:4]). $(progress[5:6])% $(similar("terrible"))")
     end
 end
 println
