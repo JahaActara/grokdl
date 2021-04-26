@@ -78,7 +78,7 @@ for iter = 1:iters
         
         if i%10 == 9
             progress = string(i/length(input_dataset))
-            println("Iter: $(iter) Progress: $(progress[3:4]).$(progress[5:6]% Training Accuracy: $(correct*100/total)%")
+            println("Iter: $(iter) Progress: $(progress[3:4]).$(progress[5:6])% Training Accuracy: $(correct*100/total)%")
         end
     end
     println()
