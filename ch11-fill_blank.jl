@@ -1,5 +1,6 @@
-# Reproducibility
+using Statistics # mean, 
 
+# Reproducibility
 using Random
 Random.seed!(1)
 
@@ -74,8 +75,51 @@ for (rev_i, review) in enumerate(repeat(input_dataset, iters))
         target_samples = cat([review[target_i]], concat[floor.(Int, rand(negative) .* length(concat)) .+ 1];dims=1)
         
         left_context = review[max([1,target_i-window]):target_i-1]
-        right_context = review[target_i+1:min
+        right_context = review[target_i+1:min(length(review),target_i+window)]
+        
+        l1 = mean(w01[left_context+right_context], axis=1)
+        l2 = sigmoid.(w12[:,target_samples]' * l1)
+        l2_delta = l2 - l2_target
+        l1_delta = w12[:,target_samples] * l2_delta
+        
+        w01[:, cat(left_context, right_context;dims=1)] .-= l1_delta .* alpha
+        w12[:, target_samples] .-= l2_delta' .* alpha
+        println(size(w12[:,target_samples]), "    ", size(l1), size(l2_delta))
+        w12[:, target_samples] .-= l1 * l2_delta' .* alpha
+    end
+    if (rev_i-1)%150 == 0
+        progress = string(rev_i/(length(input_dataset)*iters))
+        println("Iter: $(rev_i) Progress: $(progress[3:4]). $(progress[5:6])% $(similar("terrible)))
+    end
+end
+println
+print(similar("terrible"))
+
+function analogy(positive=["terrible","good"], negative["bad"])
+    norms = sum(w01 * w01, axis=1)
+    normed_weights = w01 .* norms
     
+    query_vect = zeros(length(w01[:,1]))
+    for word in positive
+        query_vect .+= normed_weights[:, word2index[word]]
+    end
+    for word in negative
+        query_vect .-= normed_weights[:, word2index[word]]
+    end
+    
+    scores = Dict()
+    for (word, index) in word2index
+        raw_diff = w01[:, index] .- query_vect
+        squared_diff = raw_diff .^ 2
+        scores[word] = -sqrt(sum(squared_diff))
+    end
+    scores = sort(collect(scores), by = x-> x[2])
+    return scores[end-10:end]
+end
+
+analogy(["terrible", "good"], ["bad"])
+analogy(["elizabeth", "he"], ["she"])
+
 
 
 
