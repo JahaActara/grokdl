@@ -1,4 +1,20 @@
-mutable struct Tensor
+abstract type Tensor end
+
+#= 
+    Tensor_1
+        Fields: data::Array
+        Functions: add
+=#
+mutable struct Tensor_1 <: Tensor 
+    data::Array
+end
+
+mutable struct Tensor_2 <: Tensor
+    data::Array
+    
+end
+
+mutable struct Tensor_3 <: Tensor
     data::Array
     creators::Vector
     creation_op::Function
