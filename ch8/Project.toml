@@ -1,0 +1,7 @@
+name = "ch8"
+uuid = "08241fab-552f-43d1-a231-15b79d3de7a9"
+authors = ["Jaha Actara <jahaactara@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
